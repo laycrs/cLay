@@ -1480,7 +1480,7 @@ struct insertfunctions{
     }
     {
       string n = "PowMod";
-      string c = "template<class T, class P, class M>\nT PowMod(T a, P b, M m){\n  if(m==1) return 0;\n  T r;\n  r = 1;\n  while(b > 0){\n    if(b % 2) r = r * a % m;\n    b /= 2;\n    if(b > 0) a = a * a % m;\n  }\n  return r;\n}\n";
+      string c = "template<class T, class P, class M>\nT PowMod(T a, P b, M m){\n  T r;\n  r = 1;\n  r %= m;\n  while(b > 0){\n    if(b % 2) r = r * a % m;\n    b /= 2;\n    if(b > 0) a = a * a % m;\n  }\n  return r;\n}\n";
       string p = "first";
       name.push_back(n); func[n] = c; place[n] = p;
     }
@@ -13450,7 +13450,7 @@ int main(int argc, char **argv){
   
 //  c.debug_writer(); return 0;
   c.output(0);
-  printf("// cLay version 20240303-1 [beta]\n");
+  printf("// cLay version 20240317-1 [beta]\n");
 
 
   str = str_store;
