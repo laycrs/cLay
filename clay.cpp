@@ -109,6 +109,14 @@ struct insertfunctions{
     }
     
     {
+      string n = "chrono";
+      string c = "#include<chrono>\n";
+      string p = "first";
+      vector<string> d;
+      name.push_back(n); func[n] = c; need[n] = d; place[n] = p;
+    }
+    
+    {
       string n = "namespace";
       string c = "using namespace std;\n";
       string p = "first";
@@ -716,11 +724,21 @@ struct insertfunctions{
       string n = "Timer";
       string c = "struct Timer{\n  double x;\n  double gettimeofday_sec(void){\n    timeval t;\n    gettimeofday(&t, 0);\n    return t.tv_sec + t.tv_usec * 1e-6;\n  }\n  void set(void){\n    x = gettimeofday_sec();\n  }\n  double get(void){\n    return gettimeofday_sec() - x;\n  }\n};\n";
       string p = "first";
+      name.push_back(n); func[n] = c; place[n] = p;
       vector<string> d;
-
       d.push_back((string)"sys_time");
-      name.push_back(n); func[n] = c; need[n] = d; place[n] = p;
+      need[n] = d;
     }
+    {
+      string n = "Timer2";
+      string c = "struct Timer2{\n  std::chrono::time_point<std::chrono::high_resolution_clock> start_time;\n  void set(void) {\n    start_time = std::chrono::high_resolution_clock::now();\n  }\n  double get(void) {\n    auto end_time = std::chrono::high_resolution_clock::now();\n    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);\n    return duration.count() * 1e-6;\n  }\n};\n";
+      string p = "first";
+      name.push_back(n); func[n] = c; place[n] = p;
+      vector<string> d;
+      d.push_back((string)"chrono");
+      need[n] = d;
+    }
+
 
     {
       string n = "Rand";
@@ -5509,6 +5527,8 @@ struct code{
     vartype.insert((string)"rollingHashSubarrays");
     vartype.insert((string)"auto");
     vartype.insert((string)"cpp_int");
+    vartype.insert((string)"Timer");
+    vartype.insert((string)"Timer2");
     vartype.insert((string)"Modint");
     vartype.insert((string)"modint");
     vartype.insert((string)"Mint");
@@ -5802,6 +5822,8 @@ struct code{
     if(strpos_ns_t(in, (string)"cLtraits_try_make_signed") >= 0) ifun.doit.insert((string)"cLtraits_try_make_signed");
     if(strpos_ns_t(in, (string)"cLtraits_try_make_unsigned") >= 0) ifun.doit.insert((string)"cLtraits_try_make_unsigned");
     if(strpos_ns_t(in, (string)"cLtraits_common_type") >= 0) ifun.doit.insert((string)"cLtraits_common_type");
+    if(strpos_ns_t(in, (string)"Timer") >= 0) ifun.doit.insert((string)"Timer");
+    if(strpos_ns_t(in, (string)"Timer2") >= 0) ifun.doit.insert((string)"Timer2");
     if(strpos_ns_t(in, (string)"Modint") >= 0) ifun.doit.insert((string)"Modint");
     if(strpos_ns_t(in, (string)"modint") >= 0) ifun.doit.insert((string)"modint");
     if(strpos_ns_t(in, (string)"Mint") >= 0) ifun.doit.insert((string)"Mint");
@@ -6758,10 +6780,10 @@ struct code{
   }
 
   vector<string> rd_wt_array(string in){ // 1+((a,b)(N)+2) returns "1+(", "(a,b)", "N", "+2)", hoge returns "hoge"
-    int i, j, k, bf = -1, bf_ind = -1, fg;
+    int i, j, k, bf = -1, bf_ind = -1, fg, lasf = 0;
     string chk;
     vector<string> res;
-    
+
     rep(i,in.size()){
       fg = 0;
       if(bf == ')'){
@@ -6772,11 +6794,16 @@ struct code{
         trim(type_ka);
         if(isValidVarType(type_ka, ' ')) fg = 0;
       }
-      if(bf == ']') fg = 1;
+      if(bf == ']') fg = lasf;
       if(isalnum(bf) && in[i] == '('){
         if(localvar.count(chk) || globalvar.count(chk) || argvar.count(chk)) fg = 1;
         //fprintf(stderr, "rd_wt [%s] [%d]\n", chk.c_str(), fg);
         if(getElementalyVarType(chk) != "error") fg = 1;
+      }
+      if(isalnum(bf) && in[i] == '[' && lasf == 0){
+        if(localvar.count(chk) || globalvar.count(chk) || argvar.count(chk)) lasf = 1;
+        //fprintf(stderr, "rd_wt [%s] [%d]\n", chk.c_str(), fg);
+        if(getElementalyVarType(chk) != "error") lasf = 1;
       }
       if(fg && in[i] == '('){
         rep(k,4) res.push_back((string)"");
@@ -7897,6 +7924,8 @@ struct code{
       // vs[3] eq
       // vs[4]
       //fprintf(stderr, "[%s] [%s] [%s] [%s] [%s]\n", vs[0].c_str(), vs[1].c_str(), vs[2].c_str(), vs[3].c_str(), vs[4].c_str());
+      vs[0] = vs[0] + "(";
+      vs[4] = ")" + vs[4];
 
       string count_condition, init_value;
       for(;;){
@@ -8827,6 +8856,7 @@ struct code{
 
       eq = "";
       rep(k,arr.size()){
+        trim(arr[k]);
         if(k) eq += "+";
         barr = rd_wt_array(arr[k]);
         if(barr.size()==4) eq += get_type_with_decltype_basic_type(getEquationType(barr[1]));
@@ -8835,7 +8865,6 @@ struct code{
       vtype = "cLtraits_try_make_signed<remove_reference<decltype("+eq+")>::type>::type";
 
       rep(k,arr.size()){
-        trim(arr[k]);
         barr = rd_wt_array(arr[k]);
         if(barr.size()==4 && getEquationType(barr[1]) == "string") vtype = "string";
         if(barr.size()!=4 && getEquationType(arr[k]) == "string") vtype = "string";
@@ -13450,7 +13479,7 @@ int main(int argc, char **argv){
   
 //  c.debug_writer(); return 0;
   c.output(0);
-  printf("// cLay version 20240317-1 [beta]\n");
+  printf("// cLay version 20240420-1\n");
 
 
   str = str_store;
@@ -13474,10 +13503,8 @@ int main(int argc, char **argv){
 【機能追加っぽいの】
 
 【バグ修正っぽいの】
-powmod(), PowMod() にて a^0 mod 1 が 0 を返すように修正（1を返していた）．
 
 【その他っぽいの】
-#ifdef, #endif, #else があっても動くように．
 
 【ドキュメントに追記したもの（元々使えるもの）】
 
