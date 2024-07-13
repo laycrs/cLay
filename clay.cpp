@@ -4416,36 +4416,12 @@ struct insertfunctions{
     }
 
     {
-      string n = "InnerProd_1";
-      string c = "template<class S>\nS InnerProd_L(int n, S a[]){\n  S res = 0;\n  rep(i,n) res += a[i];\n  return res;\n}\n";
+      string n = "InnerProd_array";
+      string c = "template<class S>\nS InnerProd(int n, S a[]){\n  S res = 0;\n  rep(i,n) res += a[i];\n  return res;\n}\ntemplate<class S, class T>\nS InnerProd(int n, S a[], T b[]){\n  S res = 0;\n  rep(i,n) res += a[i] * b[i];\n  return res;\n}\ntemplate<class S, class T, class U>\nS InnerProd(int n, S a[], T b[], U c[]){\n  S res = 0;\n  rep(i,n) res += a[i] * b[i] * c[i];\n  return res;\n}\ntemplate<class S, class T, class U, class V>\nS InnerProd(int n, S a[], T b[], U c[], V d[]){\n  S res = 0;\n  rep(i,n) res += a[i] * b[i] * c[i] * d[i];\n  return res;\n}\n";
       string p = "first";
-      vector<string> d;
       name.push_back(n); func[n] = c; place[n] = p;
     }
 
-    {
-      string n = "InnerProd_2";
-      string c = "template<class S, class T>\nS InnerProd_L(int n, S a[], T b[]){\n  S res = 0;\n  rep(i,n) res += a[i] * b[i];\n  return res;\n}\n";
-      string p = "first";
-      vector<string> d;
-      name.push_back(n); func[n] = c; place[n] = p;
-    }
-
-    {
-      string n = "InnerProd_3";
-      string c = "template<class S, class T, class U>\nS InnerProd_L(int n, S a[], T b[], U c[]){\n  S res = 0;\n  rep(i,n) res += a[i] * b[i] * c[i];\n  return res;\n}\n";
-      string p = "first";
-      vector<string> d;
-      name.push_back(n); func[n] = c; place[n] = p;
-    }
-
-    {
-      string n = "InnerProd_4";
-      string c = "template<class S, class T, class U, class V>\nS InnerProd_L(int n, S a[], T b[], U c[], V d[]){\n  S res = 0;\n  rep(i,n) res += a[i] * b[i] * c[i] * d[i];\n  return res;\n}\n";
-      string p = "first";
-      vector<string> d;
-      name.push_back(n); func[n] = c; place[n] = p;
-    }
 
     {
       string n = "crossProd";
@@ -7184,7 +7160,7 @@ struct code{
     int i, j;
     int k1, k2, k3, k4, k5;
     int p, p1, p2, p3, p4, p5;
-    string mode, arg1, arg2, bef, aft;
+    string mode, arg1, arg2, bef, aft, exaft;
 
     for(;;){
       p1 = strpos_ns(tmp, (string)">?=");
@@ -7201,6 +7177,31 @@ struct code{
       else                                              p = p5, mode = "divup";
       ifun.doit.insert(mode);
 
+      exaft = "";
+      k1 = k2 = k3 = k4 = k5 = 0;
+      for(i=p+3;i<tmp.size();i++){
+        if((k4||k5) && tmp[i] == '\\'){ i++; continue; }
+        if(k4==0 && k5==0){
+          if(tmp[i]=='(') k1++;
+          if(tmp[i]==')') k1--;
+          if(tmp[i]=='[') k2++;
+          if(tmp[i]==']') k2--;
+          if(tmp[i]=='{') k3++;
+          if(tmp[i]=='}') k3--;
+        }
+        if(k1 < 0 || k2 < 0 || k3 < 0){
+          exaft = tmp.substr(i);
+          tmp = tmp.substr(0,i);
+          break;
+        }
+        if(k1 == 0 && k2 == 0 & k3 == 0 && k4 == 0 && k5 == 0 && (tmp[i] == ';' || tmp[i] == ',')){
+          exaft = tmp.substr(i);
+          tmp = tmp.substr(0,i);
+          break;
+        }
+      }
+      //fprintf(stderr, "1 [%s] [%s]\n", tmp.c_str(), exaft.c_str());
+      
       k1 = k2 = k3 = k4 = k5 = 0;
       for(i=p-1;;i--){
         if(i >= 1 && k4 && tmp[i-1]=='/' && tmp[i]=='\''){ i-=2; continue; }
@@ -7215,19 +7216,21 @@ struct code{
           if(tmp[i]=='[') k3--;
         }
 
-        if(i==-1 || ((tmp[i] == '=' || tmp[i] == ',') && k1==0 && k2==0 && k3==0)){
+        j = 0;
+        if(k1 < 0 || k2 < 0 || k3 < 0) j = pairBracket(tmp, i);
+
+        if(j==-1 || i==-1 || ((tmp[i] == '=' || tmp[i] == ',') && k1==0 && k2==0 && k3==0)){
           aft = "";
           bef = tmp.substr(0, i+1);
           arg1 = tmp.substr(i+1,p-(i+1));
           arg2 = tmp.substr(p+3);
-          arg2 = arg2.substr(0, arg2.size()-1);
+          arg2 = arg2.substr(0, arg2.size());
         } else if(k1 < 0 || k2 < 0 || k3 < 0){
-          j = pairBracket(tmp, i);
           bef = tmp.substr(0, i+1);
           arg1 = tmp.substr(i+1, p-(i+1));
           arg2 = tmp.substr(p+3, j-(p+3));
           aft = tmp.substr(j);
-          aft = aft.substr(0, aft.size()-1);
+          aft = aft.substr(0, aft.size());
         } else {
           continue;
         }
@@ -7236,17 +7239,18 @@ struct code{
         trim(aft);
         trim(arg1);
         trim(arg2);
+        //fprintf(stderr, "2 [%s] [%s] [%s] [%s] [%s]\n", bef.c_str(), arg1.c_str(), arg2.c_str(), aft.c_str(), exaft.c_str());
         if(mode=="pow_L"){
-          tmp = bef + "(" + arg1 + " = pow_L(" + arg1 + "," + arg2 + "))" + aft + ";";
+          tmp = bef + "(" + arg1 + " = pow_L(" + arg1 + "," + arg2 + "))" + aft + exaft;
           ifun.doit.insert((string)"pow");
         } else if(mode=="moddw"){
-          tmp = bef + "(" + arg1 + " = moddw_L(" + arg1 + "," + arg2 + "))" + aft + ";";
+          tmp = bef + "(" + arg1 + " = moddw_L(" + arg1 + "," + arg2 + "))" + aft + exaft;
           ifun.doit.insert((string)"moddw");
         } else if(mode=="divup"){
-          tmp = bef + "(" + arg1 + " = divup_L(" + arg1 + "," + arg2 + "))" + aft + ";";
+          tmp = bef + "(" + arg1 + " = divup_L(" + arg1 + "," + arg2 + "))" + aft + exaft;
           ifun.doit.insert((string)"divup");
         } else {
-          tmp = bef + mode + "(" + arg1 + ", " + arg2 + ")" + aft + ";";
+          tmp = bef + mode + "(" + arg1 + ", " + arg2 + ")" + aft + exaft;
         }
         break;
       }
@@ -10262,17 +10266,6 @@ struct code{
         continue;
       }
       
-      vs = findFunction(tmp, "InnerProd()");
-      if(vs.size() == 3){
-        vtmp = split_p(vs[1], ',');
-        if(vtmp.size() == 2) ifun.doit.insert((string)"InnerProd_1");
-        if(vtmp.size() == 3) ifun.doit.insert((string)"InnerProd_2");
-        if(vtmp.size() == 4) ifun.doit.insert((string)"InnerProd_3");
-        if(vtmp.size() == 5) ifun.doit.insert((string)"InnerProd_4");
-        tmp = vs[0] + "InnerProd_L(" + vs[1] + ")" + vs[2];
-        continue;
-      }
-      
       vs = findFunction(tmp, "crossProd()");
       if(vs.size() == 3){
         ifun.doit.insert((string)"crossProd");
@@ -11277,6 +11270,9 @@ struct code{
       if(vs.size() == 3) ifun.doit.insert((string)"Arr2d_ConstLenDown");
 
       vs = findFunction(tmp, "InnerProd()");
+      if(vs.size() == 3) ifun.doit.insert((string)"InnerProd_array");
+
+      vs = findFunction(tmp, "InnerProd()");
       if(vs.size() == 3) ifun.doit.insert((string)"Point2d_InnerProd");
 
       vs = findFunction(tmp, "CrossProd()");
@@ -11696,6 +11692,7 @@ struct code{
     string chk;
     tmp = sentence_times_operator(tmp);
     tmp = sentence_inequation(tmp);
+    tmp = sentence_hatena_minmax_operator(tmp);
     tmp = sentence_pow_operator(tmp);
     tmp = sentence_div_operator(tmp);
 
@@ -12357,7 +12354,10 @@ struct code{
 
       fg = 0;
       tt = -1;
-      REP(i,1,100) if(isValidVarType(in.substr(0,i), in[i])) tt = i;
+      {
+        int lim = min(100, (int)in.size()+1);
+        REP(i,1,lim) if(isValidVarType(in.substr(0,i), in[i])) tt = i;
+      }
 
       stchar = nextToken(in);
 
@@ -12764,7 +12764,12 @@ struct code{
           vector<string> var_def, var_type, var_name;
           pair<string,string> ss;
 
-          restype = isValidVarType_string(tmp.substr(0,tt), tmp[tt]);
+          //fprintf(stderr,"function [%d %d] %s\n",ttt.size(),tt,ttt.c_str());
+          if(tt == -1){
+            restype = "";
+          } else {
+            restype = isValidVarType_string(tmp.substr(0,tt), tmp[tt]);
+          }
 
           //fprintf(stderr,"+-+-- %s\n",ttt.c_str());
           trim_until(ttt, '(', ')');
@@ -13479,7 +13484,7 @@ int main(int argc, char **argv){
   
 //  c.debug_writer(); return 0;
   c.output(0);
-  printf("// cLay version 20240420-1\n");
+  printf("// cLay version 20240714-1\n");
 
 
   str = str_store;
@@ -13511,6 +13516,7 @@ int main(int argc, char **argv){
 【ドキュメントの修正】
 
 【追加したい】
+
 det
 
 多倍長??
