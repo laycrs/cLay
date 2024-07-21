@@ -5345,6 +5345,36 @@ struct insertfunctions{
       name.push_back(n); func[n] = c; place[n] = p;
     }
 
+    {
+      string n = "kthPalindromicNumber64";
+      string c = "__int128_t kthPalindromicNumber64(ll k){\n  int i, d = 0, d2;\n  ll cnt = 1;\n  __int128_t res = 0;\n  int dig[20];\n  while(k >= cnt){\n    k -= cnt;\n    d++;\n    if(d==1) cnt = 9;\n    else if(d%2) cnt *= 10;\n  }\n  d2 = d /+ 2;\n  rep(i,d2) dig[i] = k%10, k/=10;\n  dig[d2-1]++;\n  rrep(i,d2) res = 10 * res + dig[i];\n  rep(i,d%2,d2) res = 10 * res + dig[i];\n  return res;\n}\n";
+      string p = "first";
+      name.push_back(n); func[n] = c; place[n] = p;
+      vector<string> d;
+      d.push_back((string)"__int128_t");
+      d.push_back((string)"divup");
+      need[n] = d;
+    }
+    {
+      string n = "reverseNumber";
+      string c = "ll reverseNumber(ll n){\n  int i, ds, d[20];\n  ds = Digit(n, d);\n  n = 0;\n  rep(i,ds) n = 10 * n + d[i];\n  return n;\n}\n";
+      string p = "first";
+      name.push_back(n); func[n] = c; place[n] = p;
+      vector<string> d;
+      d.push_back((string)"Digit_all");
+      need[n] = d;
+    }
+    {
+      string n = "isPalindromicNumber";
+      string c = "int isPalindromicNumber(int n){\n  int ds, d[10];\n  ds = Digit(n, d);\n  return isPalindrome(ds, d);\n}\nint isPalindromicNumber(ll n){\n  int ds, d[20];\n  ds = Digit(n, d);\n  return isPalindrome(ds, d);\n}\n";
+      string p = "first";
+      name.push_back(n); func[n] = c; place[n] = p;
+      vector<string> d;
+      d.push_back((string)"Digit_all");
+      d.push_back((string)"isPalindrome");
+      need[n] = d;
+    }
+
 
     if(0){
       string n = "";
@@ -10986,6 +11016,15 @@ struct code{
       vs = findFunction(tmp, "WildEQ()");
       if(vs.size() == 3) ifun.doit.insert((string)"WildEQ");
 
+      vs = findFunction(tmp, "kthPalindromicNumber64()");
+      if(vs.size() == 3) ifun.doit.insert((string)"kthPalindromicNumber64");
+
+      vs = findFunction(tmp, "reverseNumber()");
+      if(vs.size() == 3) ifun.doit.insert((string)"reverseNumber");
+
+      vs = findFunction(tmp, "isPalindromicNumber()");
+      if(vs.size() == 3) ifun.doit.insert((string)"isPalindromicNumber");
+
 
       vs = findFunction(tmp, "popFirst()");
       if(vs.size() == 3) ifun.doit.insert((string)"multiset_popFirst");
@@ -13484,7 +13523,7 @@ int main(int argc, char **argv){
   
 //  c.debug_writer(); return 0;
   c.output(0);
-  printf("// cLay version 20240714-1\n");
+  printf("// cLay version 20240721-1 [beta]\n");
 
 
   str = str_store;
@@ -13506,6 +13545,7 @@ int main(int argc, char **argv){
 メモ：
 
 【機能追加っぽいの】
+kthPalindromicNumber64(), reverseNumber(), isPalindromicNumber() を追加．
 
 【バグ修正っぽいの】
 

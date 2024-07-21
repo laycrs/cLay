@@ -358,10 +358,10 @@ MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ["\\(","\\)"]] } });
 <script type="text/x-mathjax-config"></script>
 <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
 <meta http-equiv="X-UA-Compatible" CONTENT="IE=EmulateIE7" />
-<title>cLay ドキュメント（version 20240714-1） - ゲームにっき（仮）別館（仮）</title>
+<title>cLay ドキュメント（version 20240721-1 [beta]） - ゲームにっき（仮）別館（仮）</title>
 
 
-<h1>cLay ドキュメント（version 20240714-1）</h1>
+<h1>cLay ドキュメント（version 20240721-1 [beta]）</h1>
 
 <h2 id="i3auf90a7">目次（全然未完成，整理中です…すみません）</h2>
 <p><a href="#iahifoaf89">概要など</a><br></p>
@@ -377,7 +377,8 @@ MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ["\\(","\\)"]] } });
 <ul><li><a href="#afkapf890">UnionFind (UF, Disjoint Set Union, DSU)</a></li>
 </ul>
 <p><a href="#akjfaf0006">整数</a><br></p>
-<ul><li><a href="#akjfaf1231">ルートとk乗根</a> | <a href="#akjfaf1235">log2</a> | <a href="#akjgbf1235">ビット</a></li>
+<ul><li><a href="#akddj8712">桁・n進数</a></li>
+<li><a href="#akjfaf1231">ルートとk乗根</a> | <a href="#akjfaf1235">log2</a> | <a href="#akjgbf1235">ビット</a></li>
 </ul>
 <p><a href="#akjfaf0007">幾何</a><br><a href="#akjfaf0008">行列</a><br><a href="#akjfaf0009">配列</a><br></p>
 <ul><li><a href="#ayjfafddaa">ソート（配列）</a> | <a href="#ayjfafddab">ソート（変数）</a> | <a href="#ayjfaf001a">主に1つの配列に関する処理</a> | <a href="#ayjfaf001b">主に1つの配列に関する計算</a> | <a href="#ayjfaf002a">主に2つの配列に関する処理</a> | <a href="#ayjfaf002b">主に2つの配列に関する計算</a> | <a href="#ayjfaf003a">主に複数の配列に関する処理</a> | <a href="#ayjfaf003b">主に複数の配列に関する計算</a></li>
@@ -847,6 +848,45 @@ uf<span style="color:#662222;">(</span><span style="color:#AA00AA;">70</span>,<s
 
 
 <h1 id="akjfaf0006">整数</h1>
+
+
+<h2 id="akddj8712">桁・n進数</h2>
+
+<p>配列の最初の要素が一番小さい桁に対応します（i番目の要素が10^iに対応，など）．<br>最後に_rがついている関数に関しては，逆に配列の最初の要素が一番大きい桁に対応します（数値を文字列として読み込んだ場合に対応，など）．<br></p>
+<ul><li><span id="code"><span style="color:#444444"><span style="color:#0000FF;">template</span>&lt;<span style="color:#0088FF;">class</span> T&gt; <span style="color:#4444FF;">inline</span> <span style="color:#0000FF;">int</span> Digit<span style="color:#662222;">(</span>T n<span style="color:#662222;">)</span></span></span> : 正の整数nを10進数で書いたときの桁数を返す（0に対しては現状0を返す）</li>
+<li>template&lt;class T, class S&gt; inline int Digit(T n, S b) : 正の整数nをb進数で書いたときの桁数を返す</li>
+<li>template&lt;class T, class S&gt; inline int Digit(T n, S res[]) : 戻り値として正の整数nを10進数で書いたときの桁数を返し，res[i]に10^iの桁の数値を代入する</li>
+<li>template&lt;class T, class S, class U&gt; inline int Digit(T n, S res[], U b) : 戻り値として正の整数nをb進数で書いたときの桁数を返し，res[i]にb^iの桁の数値を代入する</li>
+<li>template&lt;class T, class S&gt; inline void DigitF(T n, int sz, S res[]) : nを10進数で書いたときの下sz桁を返す．sz桁未満の場合は0で埋める．</li>
+<li>template&lt;class T, class S, class U&gt; inline void DigitF(T n, int sz, S res[], U b) : nをb進数で書いたときの下sz桁を返す．sz桁未満の場合は0で埋める．</li>
+<li>template&lt;class T&gt; inline T invDigit(int sz, T d[]) : sz桁の10進数d[]の値を返します．sz=4, d[]={4,6,1,0}のとき164を返す．</li>
+<li>template&lt;class T&gt; inline T invDigit_r(int sz, T d[]) : sz桁の10進数d[]の値を返します．sz=4, d[]={4,6,1,0}のとき4610を返す．</li>
+<li>template&lt;class T, class S&gt; inline T invDigit(int sz, T d[], S b) : sz桁のb進数d[]の値を返します．</li>
+<li>template&lt;class T&gt; inline int sod(T n) : nを10進数で書いたときの各桁の和を返す</li>
+<li>template&lt;class T, class S&gt; inline S sod(T n, S b) : nをb進数で書いたときの各桁の和を返す</li>
+<li>b[t](a,b,c)：t進数でabcの値を表す．これは (((a)*(t)+(b))*(t)+(c)) に展開されます．</li>
+<li>b[x,y](a,b,c,d)：((a*x+b)*x+c)*y+d を表す．[]および()の中の引数の数は任意．下の桁から y,x,x,x,... パターンの数を取るような進数を考えている感じ．</li>
+<li>template&lt;class T&gt; inline T prodDigits(T n) : nを10進数で書いたときの各桁の積を返す．n=0のときは0を返す．</li>
+<li>template&lt;class T, class S&gt; inline int DigitHist(T n, S res[]) : 正の整数nを10進数で書いたときの桁数を返し，「res[i] = 数字iが登場する回数（i=0,1,...,9）」を代入する．</li>
+</ul>
+
+<HR>
+
+<ul><li><span id="code"><span style="color:#444444"><span style="color:#0000FF;">int</span> isPalindromicNumber<span style="color:#662222;">(</span><span style="color:#0000FF;">int</span> n<span style="color:#662222;">)</span></span></span> : nが回文数なら1を，そうでないなら0を返す．</li>
+<li><span id="code"><span style="color:#444444"><span style="color:#0000FF;">int</span> isPalindromicNumber<span style="color:#662222;">(</span><span style="color:#0000FF;">ll</span> n<span style="color:#662222;">)</span></span></span> : nが回文数なら1を，そうでないなら0を返す．</li>
+<li><span id="code"><span style="color:#444444">__int128_t kthPalindromicNumber64<span style="color:#662222;">(</span><span style="color:#0000FF;">ll</span> k<span style="color:#662222;">)</span></span></span> : k番目の回文数を返す．0番目は0，1番目は1，7番目は7，10番目は11，11番目は22．$O(\log k)$ 時間程度．</li>
+<li><span id="code"><span style="color:#444444"><span style="color:#0000FF;">ll</span> reverseNumber<span style="color:#662222;">(</span><span style="color:#0000FF;">ll</span> n<span style="color:#662222;">)</span></span></span> : 桁をひっくり返した数を返す．613なら316を，780なら87を返す．</li>
+</ul>
+
+<HR>
+
+<ul><li>inline int STR2int(string s, const int b) : s が表す文字列をb進数の値と見て，その値を int 型で返す．文字は0..9A..Za..zの順で62進数まで．マイナスもOKだけど普通の書き方以外は対応してない．</li>
+<li>inline int STR2int(string s) : s が表す文字列を10進数の値と見て，その値を int 型で返す．</li>
+<li>inline ll STR2ll(string s, const int b) : s が表す文字列をb進数の値と見て，その値を ll 型で返す．文字は0..9A..Za..zの順で62進数まで．</li>
+<li>inline ll STR2ll(string s) : s が表す文字列を10進数の値と見て，その値を ll 型で返す．</li>
+</ul>
+
+
 
 
 <h2 id="akjfaf1231">ルートとk乗根</h2>
@@ -2654,33 +2694,6 @@ wt<span style="color:#662222;">(</span>x<span style="color:#662222;">(</span><sp
 
 <HR>
 
-<p>配列の最初の要素が一番小さい桁に対応します（i番目の要素が10^iに対応，など）．<br>最後に_rがついている関数に関しては，逆に配列の最初の要素が一番大きい桁に対応します（数値を文字列として読み込んだ場合に対応，など）．<br></p>
-<ul><li>template&lt;class T&gt; inline int Digit(T n) : 正の整数nを10進数で書いたときの桁数を返す（0に対しては現状0を返す）</li>
-<li>template&lt;class T, class S&gt; inline int Digit(T n, S b) : 正の整数nをb進数で書いたときの桁数を返す</li>
-<li>template&lt;class T, class S&gt; inline int Digit(T n, S res[]) : 戻り値として正の整数nを10進数で書いたときの桁数を返し，res[i]に10^iの桁の数値を代入する</li>
-<li>template&lt;class T, class S, class U&gt; inline int Digit(T n, S res[], U b) : 戻り値として正の整数nをb進数で書いたときの桁数を返し，res[i]にb^iの桁の数値を代入する</li>
-<li>template&lt;class T, class S&gt; inline void DigitF(T n, int sz, S res[]) : nを10進数で書いたときの下sz桁を返す．sz桁未満の場合は0で埋める．</li>
-<li>template&lt;class T, class S, class U&gt; inline void DigitF(T n, int sz, S res[], U b) : nをb進数で書いたときの下sz桁を返す．sz桁未満の場合は0で埋める．</li>
-<li>template&lt;class T&gt; inline T invDigit(int sz, T d[]) : sz桁の10進数d[]の値を返します．sz=4, d[]={4,6,1,0}のとき164を返す．</li>
-<li>template&lt;class T&gt; inline T invDigit_r(int sz, T d[]) : sz桁の10進数d[]の値を返します．sz=4, d[]={4,6,1,0}のとき4610を返す．</li>
-<li>template&lt;class T, class S&gt; inline T invDigit(int sz, T d[], S b) : sz桁のb進数d[]の値を返します．</li>
-<li>template&lt;class T&gt; inline int sod(T n) : nを10進数で書いたときの各桁の和を返す</li>
-<li>template&lt;class T, class S&gt; inline S sod(T n, S b) : nをb進数で書いたときの各桁の和を返す</li>
-<li>b[t](a,b,c)：t進数でabcの値を表す．これは (((a)*(t)+(b))*(t)+(c)) に展開されます．</li>
-<li>b[x,y](a,b,c,d)：((a*x+b)*x+c)*y+d を表す．[]および()の中の引数の数は任意．下の桁から y,x,x,x,... パターンの数を取るような進数を考えている感じ．</li>
-<li>template&lt;class T&gt; inline T prodDigits(T n) : nを10進数で書いたときの各桁の積を返す．n=0のときは0を返す．</li>
-<li>template&lt;class T, class S&gt; inline int DigitHist(T n, S res[]) : 正の整数nを10進数で書いたときの桁数を返し，「res[i] = 数字iが登場する回数（i=0,1,...,9）」を代入する．</li>
-</ul>
-
-<HR>
-
-<ul><li>inline int STR2int(string s, const int b) : s が表す文字列をb進数の値と見て，その値を int 型で返す．文字は0..9A..Za..zの順で62進数まで．マイナスもOKだけど普通の書き方以外は対応してない．</li>
-<li>inline int STR2int(string s) : s が表す文字列を10進数の値と見て，その値を int 型で返す．</li>
-<li>inline ll STR2ll(string s, const int b) : s が表す文字列をb進数の値と見て，その値を ll 型で返す．文字は0..9A..Za..zの順で62進数まで．</li>
-<li>inline ll STR2ll(string s) : s が表す文字列を10進数の値と見て，その値を ll 型で返す．</li>
-</ul>
-
-<HR>
 
 <ul><li>template&lt;class T&gt; int LIS_length(int n, T a[], void *mem = wmem) : 要素数nの配列aの最長増加部分列の長さを返す</li>
 <li>template&lt;class T&gt; int weaklyLIS_length(int n, T a[], void *mem = wmem) : 要素数nの配列aの最長非減少部分列の長さを返す</li>
