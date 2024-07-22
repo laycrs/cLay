@@ -5981,8 +5981,8 @@ struct code{
         if(in[i]=='{') k3++;
         if(in[i]=='}') k3--;
       }
-      if(k2==0 && in[i]=='<') k6++;
-      if(k2==0 && in[i]=='>') k6--;
+      if(k2==0 && in[i]=='<' && in.substr(i,3) != "<?=") k6++;
+      if(k2==0 && in[i]=='>' && in.substr(i,3) != ">?=") k6--;
       if(k5 == 0 && in[i]=='\'') k4 ^= 1;
       if(k4 == 0 && in[i]=='"') k5 ^= 1;
       if(k1==0 && k2==0 && k3==0 && k4==0 && k5==0 && k6==0 && in[i]==c){
@@ -13523,7 +13523,7 @@ int main(int argc, char **argv){
   
 //  c.debug_writer(); return 0;
   c.output(0);
-  printf("// cLay version 20240721-1 [beta]\n");
+  printf("// cLay version 20240723-1 [beta]\n");
 
 
   str = str_store;
@@ -13548,6 +13548,7 @@ int main(int argc, char **argv){
 kthPalindromicNumber64(), reverseNumber(), isPalindromicNumber() を追加．
 
 【バグ修正っぽいの】
+変数宣言時のコンストラクタの引数に &gt;?= などがあると<a href="https://x.com/non_archimedean/status/1815369769110978622">バグる</a>のを修正．
 
 【その他っぽいの】
 
