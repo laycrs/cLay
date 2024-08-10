@@ -358,10 +358,10 @@ MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ["\\(","\\)"]] } });
 <script type="text/x-mathjax-config"></script>
 <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
 <meta http-equiv="X-UA-Compatible" CONTENT="IE=EmulateIE7" />
-<title>cLay ドキュメント（version 20240721-1 [beta]） - ゲームにっき（仮）別館（仮）</title>
+<title>cLay ドキュメント（version 20240810-1 [beta]） - ゲームにっき（仮）別館（仮）</title>
 
 
-<h1>cLay ドキュメント（version 20240721-1 [beta]）</h1>
+<h1>cLay ドキュメント（version 20240810-1 [beta]）</h1>
 
 <h2 id="i3auf90a7">目次（全然未完成，整理中です…すみません）</h2>
 <p><a href="#iahifoaf89">概要など</a><br></p>
@@ -371,7 +371,7 @@ MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ["\\(","\\)"]] } });
 <ul><li><a href="#akljfa89083">型の省略形</a> | <a href="#akjfopauifa097">modint型など</a> | <a href="#afjaopfa078">配列の変数宣言</a></li>
 </ul>
 <p><a href="#akjfaf0001">入出力</a><br></p>
-<ul><li><a href="#akdjfoaif73">入力</a> | <a href="#akdjfoaif74">出力</a> | <a href="#akdjfoaif79">ファイル入出力</a> | <a href="#akdjfoaif76">変数宣言時の入力</a> | <a href="#akdjfoaif75">チェック付き入力</a></li>
+<ul><li><a href="#akdjfoaif73">入力</a> | <a href="#akdjfoaif74">出力</a> | <a href="#aadkjfa87">細かい注意</a> | <a href="#akdjfoaif79">ファイル入出力</a> | <a href="#akdjfoaif76">変数宣言時の入力</a> | <a href="#akdjfoaif75">チェック付き入力</a></li>
 </ul>
 <p><a href="#akjfaf0002">ループ</a><br><a href="#akjfaf0003">演算子</a><br><a href="#akjfaf0004">グラフ</a><br><a href="#akjfaf0005">データ構造</a><br></p>
 <ul><li><a href="#afkapf890">UnionFind (UF, Disjoint Set Union, DSU)</a></li>
@@ -643,6 +643,16 @@ wt<span style="color:#662222;">(</span>p<span style="color:#662222;">)</span><sp
 10 20.000000000000000 abc
 </pre>
 <p>となります．<br></p>
+
+
+
+<h2 id="aadkjfa87">細かい注意</h2>
+<p>reader(), writer() は複数の文に分割されることがあります．<br>1文に reader(), writer() が単独でなくなる場合に現状うまく動きません．<br>（とりあえずは ; で区切って単独の文にしてもらえると助かります）<br></p>
+
+<pre><span style="color:#444444">wt<span style="color:#662222;">(</span><span style="color:#AA00AA;">1</span>?<span style="color:#AA00AA;">1</span>:<span style="color:#AA00AA;">0</span><span style="color:#662222;">)</span>,wt<span style="color:#662222;">(</span><span style="color:#AA00AA;">1</span><span style="color:#662222;">)</span><span style="color:#000000;">;</span>          <span style="color:#888888;">// うまく動かない
+</span><span style="color:#0088FF;">if</span><span style="color:#662222;">(</span>cond<span style="color:#662222;">)</span> a=a?a:b, wt<span style="color:#662222;">(</span>a<span style="color:#662222;">)</span><span style="color:#000000;">;</span>  <span style="color:#888888;">// うまく動かない
+</span>wt<span style="color:#662222;">(</span><span style="color:#AA00AA;">1</span><span style="color:#662222;">)</span>,wt<span style="color:#662222;">(</span><span style="color:#AA00AA;">2</span><span style="color:#662222;">)</span><span style="color:#000000;">;</span>              <span style="color:#888888;">// 三項演算子がないので wt(1); wt(2); となりwt単独になるので問題なく動く
+</span></span></pre>
 
 
 

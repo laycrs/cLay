@@ -13523,7 +13523,7 @@ int main(int argc, char **argv){
   
 //  c.debug_writer(); return 0;
   c.output(0);
-  printf("// cLay version 20240723-1 [beta]\n");
+  printf("// cLay version 20240810-1 [beta]\n");
 
 
   str = str_store;
@@ -13555,6 +13555,7 @@ kthPalindromicNumber64(), reverseNumber(), isPalindromicNumber() を追加．
 【ドキュメントに追記したもの（元々使えるもの）】
 
 【ドキュメントの修正】
+三項演算子の併用で，reader(), writer() が単独で文にならない場合の挙動を追記．
 
 【追加したい】
 
