@@ -358,10 +358,10 @@ MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ["\\(","\\)"]] } });
 <script type="text/x-mathjax-config"></script>
 <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
 <meta http-equiv="X-UA-Compatible" CONTENT="IE=EmulateIE7" />
-<title>cLay ドキュメント（version 20240810-1 [beta]） - ゲームにっき（仮）別館（仮）</title>
+<title>cLay ドキュメント（version 20241019-1） - ゲームにっき（仮）別館（仮）</title>
 
 
-<h1>cLay ドキュメント（version 20240810-1 [beta]）</h1>
+<h1>cLay ドキュメント（version 20241019-1）</h1>
 
 <h2 id="i3auf90a7">目次（全然未完成，整理中です…すみません）</h2>
 <p><a href="#iahifoaf89">概要など</a><br></p>
@@ -383,7 +383,10 @@ MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ["\\(","\\)"]] } });
 <p><a href="#akjfaf0007">幾何</a><br><a href="#akjfaf0008">行列</a><br><a href="#akjfaf0009">配列</a><br></p>
 <ul><li><a href="#ayjfafddaa">ソート（配列）</a> | <a href="#ayjfafddab">ソート（変数）</a> | <a href="#ayjfaf001a">主に1つの配列に関する処理</a> | <a href="#ayjfaf001b">主に1つの配列に関する計算</a> | <a href="#ayjfaf002a">主に2つの配列に関する処理</a> | <a href="#ayjfaf002b">主に2つの配列に関する計算</a> | <a href="#ayjfaf003a">主に複数の配列に関する処理</a> | <a href="#ayjfaf003b">主に複数の配列に関する計算</a></li>
 </ul>
-<p><a href="#akjfaf0011">文字列</a><br><a href="#akjfaf0010">典型問題</a><br><a href="#akjfaf0">その他（未整理）</a><br><a href="#joig980">更新履歴</a><br></p>
+<p><a href="#akjfaf0011">文字列</a><br><a href="#akjfaf8371h">典型手法</a><br></p>
+<ul><li><a href="#ayjfoiujd87">尺取法（TwoPointers）</a></li>
+</ul>
+<p><a href="#akjfaf0010">典型問題</a><br><a href="#akjfaf0">その他（未整理）</a><br><a href="#joig980">更新履歴</a><br></p>
 
 
 
@@ -1194,6 +1197,84 @@ wt<span style="color:#662222;">(</span> endWith<span style="color:#662222;">(</s
 
 
 <h2 id="ayjfaf003b">主に複数の配列に関する計算</h2>
+
+
+
+
+<h1 id="akjfaf8371h">典型手法</h1>
+
+<h2 id="ayjfoiujd87">尺取法（TwoPointers）</h2>
+
+<p>長さ n 配列の配列 a に対して，条件が成り立つ区間（空でない連続部分列）を尺取法で求めるものです．<br>ただし，条件は「空の区間に対して成り立つ」と「条件が成り立つ区間に包含される区間でも成り立つ（短いほど成り立ちやすい）」が成り立たなければいけません．<br>（実際には，a は配列である必要はありませんが，配列として説明しています）<br></p>
+<p>初め空の区間から初めて，要素を追加したり，削除しながら条件が成り立つか調べます．<br><span id="code"><span style="color:#444444">TwoPointers<span style="color:#662222;">(</span>n, res, ind<span style="color:#662222;">)</span><span style="color:#441111;">[</span>追加<span style="color:#441111;">]</span><span style="color:#441111;">[</span>削除<span style="color:#441111;">]</span><span style="color:#441111;">[</span>条件<span style="color:#441111;">]</span><span style="color:#000000;">;</span></span></span> という形式で記述します．<br>追加では，a[ind]（ind番目の要素）が追加されるときの処理，<br>削除では，a[ind]（ind番目の要素）が削除されるときの処理，<br>条件では，条件を満たしているかどうか調べる関数の中身（return で bool を返す）を記述してください．<br>この記述の前に必要な前処理（初期化）をしておいてください．<br></p>
+<p>resは計算結果を格納する整数の配列（長さn以上）で，j=res[i] というのは，区間 [i,i), [i,i+1), [i,j) は条件を満たすが [i,j] は条件を満たさない（または j=n）を意味します．<br>条件を満たす区間の最大長は max(res[i] - i) で，区間の数は sum(res[i] - i) です．<br></p>
+<p>例えば，非負整数からなる配列 a に対して，和が10以下になる区間を列挙するには以下のように記述します．<br></p>
+
+<pre><span style="color:#444444"><span style="color:#0000FF;">int</span> a<span style="color:#441111;">[</span><span style="color:#AA00AA;">10</span><span style="color:#441111;">]</span> = <span style="color:#440000;font-weight:bold;">{</span><span style="color:#AA00AA;">3</span>,<span style="color:#AA00AA;">5</span>,<span style="color:#AA00AA;">1</span>,<span style="color:#AA00AA;">4</span>,<span style="color:#AA00AA;">2</span>,<span style="color:#AA00AA;">11</span>,<span style="color:#AA00AA;">4</span>,<span style="color:#AA00AA;">6</span>,<span style="color:#AA00AA;">1</span>,<span style="color:#AA00AA;">2</span><span style="color:#440000;font-weight:bold;">}</span><span style="color:#000000;">;</span>
+<span style="color:#0000FF;">int</span> res<span style="color:#441111;">[</span><span style="color:#AA00AA;">10</span><span style="color:#441111;">]</span>, s = <span style="color:#AA00AA;">0</span><span style="color:#000000;">;</span> <span style="color:#888888;">// 和 s は 0 で初期化しておく
+</span>
+TwoPointers<span style="color:#662222;">(</span><span style="color:#AA00AA;">10</span>, res, ind<span style="color:#662222;">)</span><span style="color:#441111;">[</span>
+  s += a<span style="color:#441111;">[</span>ind<span style="color:#441111;">]</span><span style="color:#000000;">;</span>
+<span style="color:#441111;">]</span><span style="color:#441111;">[</span>
+  s -= a<span style="color:#441111;">[</span>ind<span style="color:#441111;">]</span><span style="color:#000000;">;</span>
+<span style="color:#441111;">]</span><span style="color:#441111;">[</span>
+  <span style="color:#0088FF;">return</span> s &lt;= <span style="color:#AA00AA;">10</span><span style="color:#000000;">;</span>
+<span style="color:#441111;">]</span><span style="color:#000000;">;</span>
+
+<span style="color:#0088FF;">rep</span><span style="color:#662222;">(</span>i,<span style="color:#AA00AA;">10</span><span style="color:#662222;">)</span> wt<span style="color:#662222;">(</span>i,res<span style="color:#441111;">[</span>i<span style="color:#441111;">]</span><span style="color:#662222;">)</span><span style="color:#000000;">;</span>
+wt<span style="color:#662222;">(</span><span style="color:#00AA22;">&quot;max_len&quot;</span>, <span style="color:#000000;font-weight:bold;">max</span><span style="color:#441111;">[</span>i,<span style="color:#AA00AA;">0</span>,<span style="color:#AA00AA;">10</span><span style="color:#441111;">]</span><span style="color:#662222;">(</span>res<span style="color:#441111;">[</span>i<span style="color:#441111;">]</span>-i<span style="color:#662222;">)</span><span style="color:#662222;">)</span><span style="color:#000000;">;</span>
+wt<span style="color:#662222;">(</span><span style="color:#00AA22;">&quot;num&quot;</span>, sum<span style="color:#441111;">[</span>i,<span style="color:#AA00AA;">0</span>,<span style="color:#AA00AA;">10</span><span style="color:#441111;">]</span><span style="color:#662222;">(</span>res<span style="color:#441111;">[</span>i<span style="color:#441111;">]</span>-i<span style="color:#662222;">)</span><span style="color:#662222;">)</span><span style="color:#000000;">;</span>
+
+<span style="color:#888888;">// 0 3
+</span><span style="color:#888888;">// 1 4
+</span><span style="color:#888888;">// 2 5
+</span><span style="color:#888888;">// 3 5
+</span><span style="color:#888888;">// 4 5
+</span><span style="color:#888888;">// 5 5
+</span><span style="color:#888888;">// 6 8
+</span><span style="color:#888888;">// 7 10
+</span><span style="color:#888888;">// 8 10
+</span><span style="color:#888888;">// 9 10
+</span><span style="color:#888888;">// max_len 3
+</span><span style="color:#888888;">// num 20
+</span></span></pre>
+<p>そして，これはだいたい以下のような感じで展開されます（機能追加時の実装っぽいものです）．<br></p>
+
+<pre><span style="color:#444444"><span style="color:#440000;font-weight:bold;">{</span>
+  <span style="color:#0000FF;">int</span> a<span style="color:#441111;">[</span><span style="color:#AA00AA;">10</span><span style="color:#441111;">]</span> = <span style="color:#440000;font-weight:bold;">{</span><span style="color:#AA00AA;">3</span>,<span style="color:#AA00AA;">5</span>,<span style="color:#AA00AA;">1</span>,<span style="color:#AA00AA;">4</span>,<span style="color:#AA00AA;">2</span>,<span style="color:#AA00AA;">11</span>,<span style="color:#AA00AA;">4</span>,<span style="color:#AA00AA;">6</span>,<span style="color:#AA00AA;">1</span>,<span style="color:#AA00AA;">2</span><span style="color:#440000;font-weight:bold;">}</span><span style="color:#000000;">;</span>
+  <span style="color:#0000FF;">int</span> res<span style="color:#441111;">[</span><span style="color:#AA00AA;">10</span><span style="color:#441111;">]</span>, s = <span style="color:#AA00AA;">0</span><span style="color:#000000;">;</span>
+
+  <span style="color:#0000FF;">auto</span> TP_insert = <span style="color:#441111;">[</span>&amp;<span style="color:#441111;">]</span><span style="color:#662222;">(</span><span style="color:#0000FF;">int</span> ind<span style="color:#662222;">)</span><span style="color:#440000;font-weight:bold;">{</span>
+    s += a<span style="color:#441111;">[</span>ind<span style="color:#441111;">]</span><span style="color:#000000;">;</span>
+  <span style="color:#440000;font-weight:bold;">}</span><span style="color:#000000;">;</span>
+  <span style="color:#0000FF;">auto</span> TP_erase = <span style="color:#441111;">[</span>&amp;<span style="color:#441111;">]</span><span style="color:#662222;">(</span><span style="color:#0000FF;">int</span> ind<span style="color:#662222;">)</span><span style="color:#440000;font-weight:bold;">{</span>
+    s -= a<span style="color:#441111;">[</span>ind<span style="color:#441111;">]</span><span style="color:#000000;">;</span>
+  <span style="color:#440000;font-weight:bold;">}</span><span style="color:#000000;">;</span>
+  <span style="color:#0000FF;">auto</span> TP_check = <span style="color:#441111;">[</span>&amp;<span style="color:#441111;">]</span><span style="color:#662222;">(</span><span style="color:#0000FF;">void</span><span style="color:#662222;">)</span><span style="color:#440000;font-weight:bold;">{</span>
+    <span style="color:#0088FF;">return</span> s &lt;= <span style="color:#AA00AA;">10</span><span style="color:#000000;">;</span>
+  <span style="color:#440000;font-weight:bold;">}</span><span style="color:#000000;">;</span>
+
+  <span style="color:#440000;font-weight:bold;">{</span>
+    <span style="color:#0000FF;">int</span> i = <span style="color:#AA00AA;">0</span>, j = <span style="color:#AA00AA;">0</span>, n = <span style="color:#AA00AA;">10</span><span style="color:#000000;">;</span>
+    <span style="color:#0088FF;">for</span><span style="color:#662222;">(</span><span style="color:#000000;">;</span><span style="color:#000000;">;</span><span style="color:#662222;">)</span><span style="color:#440000;font-weight:bold;">{</span>
+      <span style="color:#0088FF;">if</span><span style="color:#662222;">(</span>TP_check<span style="color:#662222;">(</span><span style="color:#662222;">)</span><span style="color:#662222;">)</span><span style="color:#440000;font-weight:bold;">{</span>
+        res<span style="color:#441111;">[</span>i<span style="color:#441111;">]</span> = j<span style="color:#000000;">;</span>
+        <span style="color:#0088FF;">if</span><span style="color:#662222;">(</span>j == n<span style="color:#662222;">)</span> <span style="color:#0088FF;">break</span><span style="color:#000000;">;</span>
+        TP_insert<span style="color:#662222;">(</span>j++<span style="color:#662222;">)</span><span style="color:#000000;">;</span>
+      <span style="color:#440000;font-weight:bold;">}</span> <span style="color:#0088FF;">else</span> <span style="color:#440000;font-weight:bold;">{</span>
+        TP_erase<span style="color:#662222;">(</span>i++<span style="color:#662222;">)</span><span style="color:#000000;">;</span>
+        res<span style="color:#441111;">[</span>i<span style="color:#441111;">]</span> = res<span style="color:#441111;">[</span>i-<span style="color:#AA00AA;">1</span><span style="color:#441111;">]</span><span style="color:#000000;">;</span>
+      <span style="color:#440000;font-weight:bold;">}</span>
+    <span style="color:#440000;font-weight:bold;">}</span>
+    <span style="color:#0088FF;">while</span><span style="color:#662222;">(</span>i+<span style="color:#AA00AA;">1</span> &lt; n<span style="color:#662222;">)</span> res<span style="color:#441111;">[</span>++i<span style="color:#441111;">]</span> = j<span style="color:#000000;">;</span>
+  <span style="color:#440000;font-weight:bold;">}</span>
+
+  <span style="color:#0088FF;">rep</span><span style="color:#662222;">(</span>i,<span style="color:#AA00AA;">10</span><span style="color:#662222;">)</span> wt<span style="color:#662222;">(</span>i,res<span style="color:#441111;">[</span>i<span style="color:#441111;">]</span><span style="color:#662222;">)</span><span style="color:#000000;">;</span>
+  wt<span style="color:#662222;">(</span><span style="color:#00AA22;">&quot;max_len&quot;</span>, <span style="color:#000000;font-weight:bold;">max</span><span style="color:#441111;">[</span>i,<span style="color:#AA00AA;">0</span>,<span style="color:#AA00AA;">10</span><span style="color:#441111;">]</span><span style="color:#662222;">(</span>res<span style="color:#441111;">[</span>i<span style="color:#441111;">]</span>-i<span style="color:#662222;">)</span><span style="color:#662222;">)</span><span style="color:#000000;">;</span>
+  wt<span style="color:#662222;">(</span><span style="color:#00AA22;">&quot;num&quot;</span>, sum<span style="color:#441111;">[</span>i,<span style="color:#AA00AA;">0</span>,<span style="color:#AA00AA;">10</span><span style="color:#441111;">]</span><span style="color:#662222;">(</span>res<span style="color:#441111;">[</span>i<span style="color:#441111;">]</span>-i<span style="color:#662222;">)</span><span style="color:#662222;">)</span><span style="color:#000000;">;</span>
+<span style="color:#440000;font-weight:bold;">}</span>
+</span></pre>
+
 
 
 
@@ -2531,11 +2612,25 @@ wt<span style="color:#662222;">(</span>toLower<span style="color:#662222;">(</sp
 </ul>
 <p>関数名がよく使う名前なのでこの機能を無効化するフラグがあります（フラグの欄を参照のこと）．<br>引数の型は違っても構いませんが，計算途中でどのような型になるかは不明です（オーバーフローなどに注意）．<br>今のところ，整数と浮動小数点数ぐらいでしか上手く動かないと思います．例外的にsum()はstring型でも動くはずです（文字列を連結します）．<br>配列は長さ0の配列を与えると上手く動かないことがあります．<br></p>
 
-<pre><span style="color:#444444">  <span style="color:#0000FF;">int</span> i = <span style="color:#AA00AA;">10</span>, j = <span style="color:#AA00AA;">75</span><span style="color:#000000;">;</span>
-  <span style="color:#0000FF;">int</span> k<span style="color:#441111;">[</span><span style="color:#AA00AA;">3</span><span style="color:#441111;">]</span> = <span style="color:#440000;font-weight:bold;">{</span><span style="color:#AA00AA;">100</span>, <span style="color:#AA00AA;">200</span>, <span style="color:#AA00AA;">300</span><span style="color:#440000;font-weight:bold;">}</span><span style="color:#000000;">;</span>
-  wt<span style="color:#662222;">(</span>gcd<span style="color:#662222;">(</span>i,j,k<span style="color:#662222;">(</span><span style="color:#AA00AA;">3</span><span style="color:#662222;">)</span><span style="color:#662222;">)</span><span style="color:#662222;">)</span><span style="color:#000000;">;</span> <span style="color:#888888;">// gcd(10,75,100,200,300) = 5
-</span>  wt<span style="color:#662222;">(</span><span style="color:#000000;font-weight:bold;">min</span><span style="color:#662222;">(</span>i,j,k<span style="color:#662222;">(</span><span style="color:#AA00AA;">3</span><span style="color:#662222;">)</span><span style="color:#662222;">)</span><span style="color:#662222;">)</span><span style="color:#000000;">;</span> <span style="color:#888888;">// min(10,75,100,200,300) = 10
-</span>  wt<span style="color:#662222;">(</span>sum<span style="color:#662222;">(</span>i,j,k<span style="color:#662222;">(</span><span style="color:#AA00AA;">3</span><span style="color:#662222;">)</span><span style="color:#662222;">)</span><span style="color:#662222;">)</span><span style="color:#000000;">;</span> <span style="color:#888888;">// sum(10,75,100,200,300) = 685
+<pre><span style="color:#444444"><span style="color:#0000FF;">int</span> i = <span style="color:#AA00AA;">10</span>, j = <span style="color:#AA00AA;">75</span><span style="color:#000000;">;</span>
+<span style="color:#0000FF;">int</span> k<span style="color:#441111;">[</span><span style="color:#AA00AA;">3</span><span style="color:#441111;">]</span> = <span style="color:#440000;font-weight:bold;">{</span><span style="color:#AA00AA;">100</span>, <span style="color:#AA00AA;">200</span>, <span style="color:#AA00AA;">300</span><span style="color:#440000;font-weight:bold;">}</span><span style="color:#000000;">;</span>
+wt<span style="color:#662222;">(</span>gcd<span style="color:#662222;">(</span>i,j,k<span style="color:#662222;">(</span><span style="color:#AA00AA;">3</span><span style="color:#662222;">)</span><span style="color:#662222;">)</span><span style="color:#662222;">)</span><span style="color:#000000;">;</span> <span style="color:#888888;">// gcd(10,75,100,200,300) = 5
+</span>wt<span style="color:#662222;">(</span><span style="color:#000000;font-weight:bold;">min</span><span style="color:#662222;">(</span>i,j,k<span style="color:#662222;">(</span><span style="color:#AA00AA;">3</span><span style="color:#662222;">)</span><span style="color:#662222;">)</span><span style="color:#662222;">)</span><span style="color:#000000;">;</span> <span style="color:#888888;">// min(10,75,100,200,300) = 10
+</span>wt<span style="color:#662222;">(</span>sum<span style="color:#662222;">(</span>i,j,k<span style="color:#662222;">(</span><span style="color:#AA00AA;">3</span><span style="color:#662222;">)</span><span style="color:#662222;">)</span><span style="color:#662222;">)</span><span style="color:#000000;">;</span> <span style="color:#888888;">// sum(10,75,100,200,300) = 685
+</span></span></pre>
+<p>min(), max() については（ //no-min() などのフラグを使わなければ）標準のC++の min(), max() を上書きして使えなくなる（両立できなくなる）ので，<br>std::min(), std::max() と std:: をつけると cLay の機能でなく，C++ のmin(), max() を使います．<br></p>
+
+<pre><span style="color:#444444"><span style="color:#0000FF;">int</span> x = <span style="color:#AA00AA;">-10</span><span style="color:#000000;">;</span>
+<span style="color:#0000FF;">ull</span> y = <span style="color:#AA00AA;">4</span><span style="color:#000000;">;</span>
+<span style="color:#0000FF;">ll</span> z<span style="color:#000000;">;</span>
+
+z = <span style="color:#000000;font-weight:bold;">min</span><span style="color:#662222;">(</span>x,y<span style="color:#662222;">)</span> * <span style="color:#AA00AA;">1000000000</span><span style="color:#000000;">;</span>
+wt<span style="color:#662222;">(</span>z<span style="color:#662222;">)</span><span style="color:#000000;">;</span>                 <span style="color:#888888;">// -10000000000 (min(x,y) はll型の-10になる; 一番桁数が大きいものの符号付きになる)
+</span>
+z = <span style="color:#000000;font-weight:bold;">std</span>::<span style="color:#000000;font-weight:bold;">min</span><span style="color:#662222;">(</span>x,y<span style="color:#662222;">)</span><span style="color:#000000;">;</span>     <span style="color:#888888;">// C++のminでは型が揃ってないのでコンパイルエラー
+</span>
+z = <span style="color:#000000;font-weight:bold;">min</span><span style="color:#662222;">(</span><span style="color:#440000;font-weight:bold;">{</span><span style="color:#AA00AA;">1</span>,<span style="color:#AA00AA;">2</span>,<span style="color:#AA00AA;">3</span><span style="color:#440000;font-weight:bold;">}</span><span style="color:#662222;">)</span><span style="color:#000000;">;</span>      <span style="color:#888888;">// cLay の機能ではコンパイルエラー
+</span>z = <span style="color:#000000;font-weight:bold;">std</span>::<span style="color:#000000;font-weight:bold;">min</span><span style="color:#662222;">(</span><span style="color:#440000;font-weight:bold;">{</span><span style="color:#AA00AA;">1</span>,<span style="color:#AA00AA;">2</span>,<span style="color:#AA00AA;">3</span><span style="color:#440000;font-weight:bold;">}</span><span style="color:#662222;">)</span><span style="color:#000000;">;</span> <span style="color:#888888;">// C++のminでは z=1 になる
 </span></span></pre>
 <HR>
 
@@ -3454,7 +3549,8 @@ cntArrayNecessaryElement_walloc<span style="color:#662222;">(</span><span style=
 
 
 <h1 id="joig980">更新履歴</h2>
-<ul><li><b>20240714-1</b>:<br>【バグ修正っぽいの】<br>if(), for(), while() など制御文の () の内部とか，関数の引数とかで &lt;?=, &gt;?=, **=, %%=, /+= が使えない，うまく展開されないのを修正．<br>Point2dのInnerProd()が動かないバグを修正（配列の方のInnerProdが邪魔してた）．<br>配列外アクセスを一部修正．<br></li>
+<ul><li><b>20241019-1</b>:<br>【機能追加っぽいの】<br>kthPalindromicNumber64(), reverseNumber(), isPalindromicNumber() を追加．<br>TwoPointers()[][][] を追加（尺取法）．<br>【バグ修正っぽいの】<br>変数宣言時のコンストラクタの引数に &gt;?= などがあると<a href="https://x.com/non_archimedean/status/1815369769110978622">バグる</a>のを修正．<br>wt(), sum(), min() などの中でラムダ式 auto f = [](){}; を配列と思って sum(f(2)); を sum(f[0],f[1]); に展開して<a href="https://x.com/non_archimedean/status/1840190452349423783">バグってた</a>のを展開しないようにしたはず．<br>std::min(), std::max() とmin(), max() の前に std:: があるとcLay独自の min(), max() でなく C++ 標準の min(), max() を使用するようにした．<br>wt(min(a(3))+1); で a の型が無視され wt の中身が int 型と解釈され，状況によって<a href="https://x.com/non_archimedean/status/1846167977865236938">エラーになる</a>のを修正（cLtraits系などを検出するようにした）．<br>【ドキュメントの修正】<br>三項演算子の併用で，reader(), writer() が単独で文にならない場合の挙動を追記．<br>min(), max() についていくらか追記．<br></li>
+<li><b>20240714-1</b>:<br>【バグ修正っぽいの】<br>if(), for(), while() など制御文の () の内部とか，関数の引数とかで &lt;?=, &gt;?=, **=, %%=, /+= が使えない，うまく展開されないのを修正．<br>Point2dのInnerProd()が動かないバグを修正（配列の方のInnerProdが邪魔してた）．<br>配列外アクセスを一部修正．<br></li>
 <li><b>20240420-1</b>:<br>【機能追加っぽいの】<br>Timer2 構造体を追加．<br>【バグ修正っぽいの】<br>powmod(), PowMod() にて a^0 mod 1 が 0 を返すように修正（1を返していた）．<br><a href="https://twitter.com/non_archimedean/status/1776152574032224277">min(0,sum[i,0,0](0));</a> などが動かないのを応急処置．int a[3]; sum(a(3)); のような感じで配列の展開の形にされてたのが原因．応急処置なのでまだ動かないことがあるはず．<br>【その他っぽいの】<br>#ifdef, #endif, #else があっても動くように．</li>
 <li><b>20240104-1</b>:<br>【バグ修正っぽいの】<br>weightedUnionFind で重みの型が int 以外のとき<a href="https://twitter.com/non_archimedean/status/1742150522982031631">動かなかった</a>のを修正．<br>int i = 1 &gt= 2; のように変数宣言の初期化の際に = があると<a href="https://twitter.com/non_archimedean/status/1732016194394185957">動かなかった</a>の修正．<br>max[i,0,5](式); などで式の部分に &lt; &gt; があるとパースミスって<a href="https://twitter.com/laycrs/status/1732365604752122281">動かなかった</a>のを修正．<br>【その他っぽいの】<br>UnionFind 系でコンストラクタの mode に不正な値いれて呼び出したとき assert で落ちるようにした．<br>string a; wt(a.substr(1,2)); などができるように：引数を string &amp;a から const string &amp;a にした．<br>↑のついでに，vector, set, multiset などを引数に取るときにも const T &amp; の形にした．</li>
 <li><b>20231120-1</b>:<br>【機能追加っぽいの】<br>startWith(), endWith() を追加．<br>MergeTech() を追加．<br>WildEQ() を追加．<br>【バグ修正っぽいの】<br>inversion_range(), inversion() の引数に const をつけた．ついでに，引数が vector や string のinversion() を追加．</li>

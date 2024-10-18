@@ -6492,6 +6492,7 @@ struct code{
     int i;
     map<string, int> flags;
     pair<string,char> stchar;
+    vector<string> do_typename;
     string tp, str;
 
     for(;;){
@@ -6550,6 +6551,9 @@ struct code{
         flags[tp] = 1;
         if(tp == "char" && char_fg != NULL) (*char_fg)++;
         if(tp == "error" && fg!=NULL) (*fg)++;
+        if(tp.substr(0,8) == "cLtraits" && fg!=NULL) (*fg)++;
+        if(tp.substr(0,16) == "remove_reference" && fg!=NULL) (*fg)++;
+        if(tp.substr(0,8) == "decltype" && fg!=NULL) (*fg)++;
       }
     }
 
@@ -8110,6 +8114,7 @@ struct code{
       cd += "}";
 
       if(blocked){
+        fprintf(stderr,"hoge6-1\n");
         if(mode==0) cd += vs[0] + resvar + vs[4];
         if(mode==1) cd += vs[0] + indvar + vs[4];
         
@@ -8689,6 +8694,12 @@ struct code{
         if(g_flags.count("no-min()")==0){
           vsnx = findFunction(vs[1],"min()");
           if(vsnx.size()==3 && vsnx[1].size()==0) vsnx.clear();
+          if(vsnx.size()){
+            string chk = vsnx[0];
+            trim(chk);
+            int len = chk.size();
+            if(len >= 5 && chk.substr(len-5)=="std::") vsnx.clear();
+          }
           if(vsnx.size()==3){
             vs[0] = vs[0] + func_n1 + vsnx[0];
             vs[1] = vsnx[1];
@@ -8714,6 +8725,12 @@ struct code{
         if(g_flags.count("no-max()")==0){
           vsnx = findFunction(vs[1],"max()");
           if(vsnx.size()==3 && vsnx[1].size()==0) vsnx.clear();
+          if(vsnx.size()){
+            string chk = vsnx[0];
+            trim(chk);
+            int len = chk.size();
+            if(len >= 5 && chk.substr(len-5)=="std::") vsnx.clear();
+          }
           if(vsnx.size()==3){
             vs[0] = vs[0] + func_n1 + vsnx[0];
             vs[1] = vsnx[1];
@@ -8993,6 +9010,71 @@ struct code{
     }
 
     return tmp;
+  }
+
+
+  string sentence_twopointers(string tmp){
+    string f_insert, f_erase, f_check, str_bef, str_aft;
+    string varname_n, varname_i, varname_j, fname_insert, fname_erase, fname_check;
+    string stc;
+    vector<string> vs, varg;
+
+    vs = findFunction(tmp, "TwoPointers()[][][]");
+    if(vs.size() != 6) return tmp;
+    str_bef = vs[0]; trim(str_bef);
+    f_insert = vs[2]; trim(f_insert);
+    f_erase = vs[3]; trim(f_erase);
+    f_check = vs[4]; trim(f_check);
+    str_aft = vs[5]; trim(str_aft);
+    if(str_bef != "") fprintf(stderr, "twopointers: has some prefix\n");
+    if(str_aft != ";") fprintf(stderr, "twopointers: has some surfix\n");
+
+    varname_n = getUnusedVarName();
+    varname_i = getUnusedVarName();
+    varname_j = getUnusedVarName();
+    fname_insert = getUnusedVarName();
+    fname_erase = getUnusedVarName();
+    fname_check = getUnusedVarName();
+
+    varg = split_p2(vs[1], ','); // n, res, ind
+    assert(varg.size() == 3 && "twopointers must has 3 args in ()");
+    trim(varg[0]);
+    trim(varg[1]);
+    trim(varg[2]);
+
+    stc += "auto " + fname_insert + " = [&](int " + varg[2] + "){\n";
+    stc += f_insert;
+    stc += "};\n";
+    stc += "auto " + fname_erase + " = [&](int " + varg[2] + "){\n";
+    stc += f_erase;
+    stc += "};\n";
+    stc += "auto " + fname_check + " = [&](void){\n";
+    stc += f_check;
+    stc += "};\n";
+
+    stc += "if(true){\n";
+    
+    stc += "int " + varname_i + " = 0;\n";
+    stc += "int " + varname_j + " = 0;\n";
+    stc += "const int " + varname_n + " = " + varg[0] + ";\n";
+
+    stc += "for(;;){\n";
+
+    stc += "  if(" + fname_check + "()){\n";
+    stc += "    " + varg[1] + "[" + varname_i + "] = " + varname_j + ";\n";
+    stc += "    if(" + varname_j + " == " + varname_n + ") break;\n";
+    stc += "    " + fname_insert + "(" + varname_j + "++);\n";
+    stc += "  } else {\n";
+    stc += "    " + fname_erase + "(" + varname_i + "++);\n";
+    stc += "    " + varg[1] + "[" + varname_i + "] = " + varg[1] + "[" + varname_i + "-1];\n";
+    stc += "  }\n";
+    
+    stc += "}\n"; // for(;;)
+    stc += "while(" + varname_i + "+1 < " + varname_n + ") " + varg[1] + "[++" + varname_i + "] = " + varname_j + ";";
+    stc += "}\n"; // if(true)
+
+    insert(stc, str.size());
+    return "";
   }
 
 
@@ -11512,6 +11594,12 @@ struct code{
       if(g_flags.count("no-min()")==0){
         vs = findFunction(tmp, "min()");
         if(vs.size()) trim(vs[1]);
+        if(vs.size()){
+          string chk = vs[0];
+          trim(chk);
+          int len = chk.size();
+          if(len >= 5 && chk.substr(len-5)=="std::") vs.clear();
+        }
         if(vs.size() && vs[1].size() && len > vs[0].size()) len = vs[0].size(), rvs = vs, funstr = "min()", modestr = "gcdlcm";
       }
       if(g_flags.count("no-MIN()")==0){
@@ -11521,6 +11609,12 @@ struct code{
       }
       if(g_flags.count("no-max()")==0){
         vs = findFunction(tmp, "max()");
+        if(vs.size()){
+          string chk = vs[0];
+          trim(chk);
+          int len = chk.size();
+          if(len >= 5 && chk.substr(len-5,5)=="std::") vs.clear();
+        }
         if(vs.size()) trim(vs[1]);
         if(vs.size() && vs[1].size() && len > vs[0].size()) len = vs[0].size(), rvs = vs, funstr = "max()", modestr = "gcdlcm";
       }
@@ -11612,6 +11706,9 @@ struct code{
         chknum++;
       }
     }
+
+    tmp = sentence_twopointers(tmp); // TwoPointers()[][][];
+    if(tmp=="") return;
 
     for(;;){
       string mode, funstr;
@@ -11925,7 +12022,33 @@ struct code{
         } else {
           res.push_back({"def", reg});
         }
-        if(!regged) add_localvar(str_var, str_type);
+        
+        int is_lambda = 0; // ラムダ式っぽいものはlocalvarに登録しない
+        {
+          int k;
+          vector<string> vvs = split_p(str_type, ',');
+          string rh = vvs[3];
+          for(;;){
+            trim(rh);
+            if(rh[0] != '[') break;
+            k = pairBracket(rh, 0);
+            if(k <= 0) break;
+            rh = rh.substr(k+1);
+
+            trim(rh);
+            if(rh[0] != '(') break;
+            k = pairBracket(rh, 0);
+            if(k <= 0) break;
+            rh = rh.substr(k+1);
+
+            // if(rh[0] != '{') break;
+
+            is_lambda = 1;
+            break;
+          }
+        }
+        
+        if(!is_lambda && !regged) add_localvar(str_var, str_type);
       }
     }
 
@@ -13523,7 +13646,7 @@ int main(int argc, char **argv){
   
 //  c.debug_writer(); return 0;
   c.output(0);
-  printf("// cLay version 20240810-1 [beta]\n");
+  printf("// cLay version 20241019-1\n");
 
 
   str = str_store;
@@ -13545,17 +13668,14 @@ int main(int argc, char **argv){
 メモ：
 
 【機能追加っぽいの】
-kthPalindromicNumber64(), reverseNumber(), isPalindromicNumber() を追加．
 
 【バグ修正っぽいの】
-変数宣言時のコンストラクタの引数に &gt;?= などがあると<a href="https://x.com/non_archimedean/status/1815369769110978622">バグる</a>のを修正．
 
 【その他っぽいの】
 
 【ドキュメントに追記したもの（元々使えるもの）】
 
 【ドキュメントの修正】
-三項演算子の併用で，reader(), writer() が単独で文にならない場合の挙動を追記．
 
 【追加したい】
 
