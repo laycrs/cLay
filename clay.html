@@ -358,10 +358,10 @@ MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ["\\(","\\)"]] } });
 <script type="text/x-mathjax-config"></script>
 <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
 <meta http-equiv="X-UA-Compatible" CONTENT="IE=EmulateIE7" />
-<title>cLay ドキュメント（version 20241019-1） - ゲームにっき（仮）別館（仮）</title>
+<title>cLay ドキュメント（version 20250224-1） - ゲームにっき（仮）別館（仮）</title>
 
 
-<h1>cLay ドキュメント（version 20241019-1）</h1>
+<h1>cLay ドキュメント（version 20250224-1）</h1>
 
 <h2 id="i3auf90a7">目次（全然未完成，整理中です…すみません）</h2>
 <p><a href="#iahifoaf89">概要など</a><br></p>
@@ -386,7 +386,7 @@ MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ["\\(","\\)"]] } });
 <p><a href="#akjfaf0011">文字列</a><br><a href="#akjfaf8371h">典型手法</a><br></p>
 <ul><li><a href="#ayjfoiujd87">尺取法（TwoPointers）</a></li>
 </ul>
-<p><a href="#akjfaf0010">典型問題</a><br><a href="#akjfaf0">その他（未整理）</a><br><a href="#joig980">更新履歴</a><br></p>
+<p><a href="#akjfaf0010">典型問題</a><br><a href="#akjfaf0">その他（未整理）</a><br><a href="#ak87311s">ライセンス（License）</a><br><a href="#joig980">更新履歴</a><br></p>
 
 
 
@@ -2717,7 +2717,9 @@ z = <span style="color:#000000;font-weight:bold;">min</span><span style="color:#
 </span></span></pre>
 <HR>
 
-<ul><li>template&lt;class T&gt; inline int Cmod2(T n, T k) : C(n,k) mod 2 を返す．</li>
+<ul><li><span id="code"><span style="color:#444444"><span style="color:#0000FF;">template</span>&lt;<span style="color:#0088FF;">class</span> T&gt; <span style="color:#4444FF;">inline</span> <span style="color:#0000FF;">int</span> Cmod2<span style="color:#662222;">(</span>T n, T k<span style="color:#662222;">)</span></span></span> : C(n,k) mod 2 を返す（二項係数）．</li>
+<li><span id="code"><span style="color:#444444"><span style="color:#0000FF;">template</span>&lt;<span style="color:#0088FF;">class</span> T&gt; <span style="color:#4444FF;">inline</span> <span style="color:#0000FF;">int</span> Cmod5<span style="color:#662222;">(</span>T n, T k<span style="color:#662222;">)</span></span></span> : C(n,k) mod 5 を返す．</li>
+<li><span id="code"><span style="color:#444444"><span style="color:#0000FF;">template</span>&lt;<span style="color:#0088FF;">class</span> T&gt; <span style="color:#4444FF;">inline</span> <span style="color:#0000FF;">int</span> Cmod10<span style="color:#662222;">(</span>T n, T k<span style="color:#662222;">)</span></span></span> : C(n,k) mod 10 を返す．</li>
 </ul>
 
 <HR>
@@ -3548,8 +3550,15 @@ cntArrayNecessaryElement_walloc<span style="color:#662222;">(</span><span style=
 
 
 
+<h1 id="ak87311s">ライセンス（License）</h2>
+<p>This code is licensed under <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a>.<br></p>
+
+
+
+
 <h1 id="joig980">更新履歴</h2>
-<ul><li><b>20241019-1</b>:<br>【機能追加っぽいの】<br>kthPalindromicNumber64(), reverseNumber(), isPalindromicNumber() を追加．<br>TwoPointers()[][][] を追加（尺取法）．<br>【バグ修正っぽいの】<br>変数宣言時のコンストラクタの引数に &gt;?= などがあると<a href="https://x.com/non_archimedean/status/1815369769110978622">バグる</a>のを修正．<br>wt(), sum(), min() などの中でラムダ式 auto f = [](){}; を配列と思って sum(f(2)); を sum(f[0],f[1]); に展開して<a href="https://x.com/non_archimedean/status/1840190452349423783">バグってた</a>のを展開しないようにしたはず．<br>std::min(), std::max() とmin(), max() の前に std:: があるとcLay独自の min(), max() でなく C++ 標準の min(), max() を使用するようにした．<br>wt(min(a(3))+1); で a の型が無視され wt の中身が int 型と解釈され，状況によって<a href="https://x.com/non_archimedean/status/1846167977865236938">エラーになる</a>のを修正（cLtraits系などを検出するようにした）．<br>【ドキュメントの修正】<br>三項演算子の併用で，reader(), writer() が単独で文にならない場合の挙動を追記．<br>min(), max() についていくらか追記．<br></li>
+<ul><li><b>20250224-1</b>:<br>【機能追加っぽいの】<br>Cmod5(), Cmod10() を追加．<br>【その他っぽいの】<br>ライセンスを CC0-1.0 とした（ということを明記した）．</li>
+<li><b>20241019-1</b>:<br>【機能追加っぽいの】<br>kthPalindromicNumber64(), reverseNumber(), isPalindromicNumber() を追加．<br>TwoPointers()[][][] を追加（尺取法）．<br>【バグ修正っぽいの】<br>変数宣言時のコンストラクタの引数に &gt;?= などがあると<a href="https://x.com/non_archimedean/status/1815369769110978622">バグる</a>のを修正．<br>wt(), sum(), min() などの中でラムダ式 auto f = [](){}; を配列と思って sum(f(2)); を sum(f[0],f[1]); に展開して<a href="https://x.com/non_archimedean/status/1840190452349423783">バグってた</a>のを展開しないようにしたはず．<br>std::min(), std::max() とmin(), max() の前に std:: があるとcLay独自の min(), max() でなく C++ 標準の min(), max() を使用するようにした．<br>wt(min(a(3))+1); で a の型が無視され wt の中身が int 型と解釈され，状況によって<a href="https://x.com/non_archimedean/status/1846167977865236938">エラーになる</a>のを修正（cLtraits系などを検出するようにした）．<br>【ドキュメントの修正】<br>三項演算子の併用で，reader(), writer() が単独で文にならない場合の挙動を追記．<br>min(), max() についていくらか追記．<br></li>
 <li><b>20240714-1</b>:<br>【バグ修正っぽいの】<br>if(), for(), while() など制御文の () の内部とか，関数の引数とかで &lt;?=, &gt;?=, **=, %%=, /+= が使えない，うまく展開されないのを修正．<br>Point2dのInnerProd()が動かないバグを修正（配列の方のInnerProdが邪魔してた）．<br>配列外アクセスを一部修正．<br></li>
 <li><b>20240420-1</b>:<br>【機能追加っぽいの】<br>Timer2 構造体を追加．<br>【バグ修正っぽいの】<br>powmod(), PowMod() にて a^0 mod 1 が 0 を返すように修正（1を返していた）．<br><a href="https://twitter.com/non_archimedean/status/1776152574032224277">min(0,sum[i,0,0](0));</a> などが動かないのを応急処置．int a[3]; sum(a(3)); のような感じで配列の展開の形にされてたのが原因．応急処置なのでまだ動かないことがあるはず．<br>【その他っぽいの】<br>#ifdef, #endif, #else があっても動くように．</li>
 <li><b>20240104-1</b>:<br>【バグ修正っぽいの】<br>weightedUnionFind で重みの型が int 以外のとき<a href="https://twitter.com/non_archimedean/status/1742150522982031631">動かなかった</a>のを修正．<br>int i = 1 &gt= 2; のように変数宣言の初期化の際に = があると<a href="https://twitter.com/non_archimedean/status/1732016194394185957">動かなかった</a>の修正．<br>max[i,0,5](式); などで式の部分に &lt; &gt; があるとパースミスって<a href="https://twitter.com/laycrs/status/1732365604752122281">動かなかった</a>のを修正．<br>【その他っぽいの】<br>UnionFind 系でコンストラクタの mode に不正な値いれて呼び出したとき assert で落ちるようにした．<br>string a; wt(a.substr(1,2)); などができるように：引数を string &amp;a から const string &amp;a にした．<br>↑のついでに，vector, set, multiset などを引数に取るときにも const T &amp; の形にした．</li>

@@ -1,5 +1,8 @@
 // cLay ゲームにっき（仮）別館（仮） http://rsujskf.s602.xrea.com/
 
+// This code is licensed under CC0.
+// http://creativecommons.org/publicdomain/zero/1.0/
+
 #include<bits/stdc++.h>
 using namespace std;
 
@@ -2006,10 +2009,25 @@ struct insertfunctions{
       string n = "Cmod2";
       string c = "template<class T>\ninline int Cmod2(T n, T k){\n  if((n&k)==k) return 1;\n  return 0;\n}\n";
       string p = "first";
-      vector<string> d;
-      name.push_back(n); func[n] = c; need[n] = d; place[n] = p;
+      name.push_back(n); func[n] = c; place[n] = p;
     }
-    
+    {
+      string n = "Cmod5";
+      string c = "template<class T>\ninline int Cmod5(T n, T k){\n  static int c[5][5];\n  if(c[0][0]==0){\n    int i, j;\n    rep(i,5) c[i][0] = 1;\n    rep(i,1,5) rep(j,1,5) c[i][j] = (c[i-1][j-1] + c[i-1][j]) % 5;\n  }\n  if(k < 0 || k > n) return 0;\n  int res = 1;\n  while(n > 0 && res > 0){\n    res = (res * c[n%5][k%5]) % 5;\n    n /= 5;\n    k /= 5;\n  }\n  return res;\n}\n";
+      string p = "first";
+      name.push_back(n); func[n] = c; place[n] = p;
+    }
+    {
+      string n = "Cmod10";
+      string c = "template<class T>\ninline int Cmod10(T n, T k){\n  int a, b;\n  if(k < 0 || k > n) return 0;\n  a = Cmod2(n,k);\n  b = Cmod5(n,k);\n  if(b%2 != a) b += 5;\n  return b;\n}\n";
+      string p = "first";
+      name.push_back(n); func[n] = c; place[n] = p;
+      vector<string> d;
+      d.push_back((string)"Cmod2");
+      d.push_back((string)"Cmod5");
+      need[n] = d;
+    }
+
     {
       string n = "Isqrt_f";
       string c = "inline ll Isqrt_f_L(const ll n){\n  ll r = sqrt(n);\n  r = max(r-2, 0);\n  while( (r+1)**2 <= n ) r++;\n  return r;\n}\n";
@@ -5638,7 +5656,7 @@ struct code{
 
     if(localvar.size()) res = 0;
     if(nxtlst.size()) res = 0;
-    rep(i,str.size()) if(str[i]!=";") res = 0;
+    rep(i,(int)str.size()) if(str[i]!=";") res = 0;
 
     return res;
   }
@@ -5657,7 +5675,7 @@ struct code{
     res.first = NULL;
     res.second = "";
 
-    rep(i,str.size()){
+    rep(i,(int)str.size()){
       if(strtype[i] == "block-struct"){
         tmp = str[i];
         if(tmp == "struct " + in){
@@ -10918,6 +10936,15 @@ struct code{
       vs = findFunction(tmp, "Fib_mod()");
       if(vs.size() == 3) ifun.doit.insert((string)"Fib_mod");
 
+      vs = findFunction(tmp, "Cmod2()");
+      if(vs.size() == 3) ifun.doit.insert((string)"Cmod2");
+
+      vs = findFunction(tmp, "Cmod5()");
+      if(vs.size() == 3) ifun.doit.insert((string)"Cmod5");
+
+      vs = findFunction(tmp, "Cmod10()");
+      if(vs.size() == 3) ifun.doit.insert((string)"Cmod10");
+
       vs = findFunction(tmp, "Unique()");
       if(vs.size() == 3) ifun.doit.insert((string)"Unique");
 
@@ -12991,15 +13018,15 @@ struct code{
             string varnames, varnames_memo, vardefs;
             string str_add;
 
-            rep(i,memostr.size()) if(memostr[i]=='[') break;
-            if(i < memostr.size()){
+            rep(i,(int)memostr.size()) if(memostr[i]=='[') break;
+            if(i < (int)memostr.size()){
               vector<string> memovs, memovs2;
               trim_until(memostr, '[', ']');
               memostr = memostr.substr(1, memostr.size()-2);
               memovs = split_p3(memostr, ',');
-              rep(i,memovs.size()){
+              rep(i,(int)memovs.size()){
                 memovs2 = split_p3(memovs[i], ':');
-                rep(j,memovs2.size()) trim(memovs2[j]);
+                rep(j,(int)memovs2.size()) trim(memovs2[j]);
                 if(memovs2.size()==1){
                   range1.push_back(0);
                   range2.push_back(atoi(memovs2[0].c_str())-1);
@@ -13012,7 +13039,7 @@ struct code{
 
             assert(range1.size() == 0 || range1.size() == var_type.size());
 
-            rep(i,var_type.size()){
+            rep(i,(int)var_type.size()){
               if(i) varnames += ",";
               varnames += var_name[i];
               if(i) vardefs += ",";
@@ -13023,7 +13050,7 @@ struct code{
               varnames_memo = varnames;
               if(var_type.size() != 1) varnames_memo = "{" + varnames_memo + "}";
             } else {
-              rep(i,var_type.size()){
+              rep(i,(int)var_type.size()){
                 varnames_memo += "[" + var_name[i];
                 if(range1[i]) varnames_memo += " - (" + to_string(range1[i]) + ")";
                 varnames_memo += "]";
@@ -13048,7 +13075,7 @@ struct code{
                 str_add += var_type[0];
               } else {
                 str_add += "tuple<";
-                rep(i,var_type.size()){
+                rep(i,(int)var_type.size()){
                   if(i) str_add += ",";
                   str_add += var_type[i];
                 }
@@ -13427,7 +13454,7 @@ int main(int argc, char **argv){
     }
 
     putchar('"');
-    rep(i,str.size()){
+    rep(i,(int)str.size()){
       if(str.substr(i,6)=="-----\n"){
         putchar('"');
         putchar('\n');
@@ -13598,8 +13625,8 @@ int main(int argc, char **argv){
         }
         if(str.substr(i,4) == "main"){
           j = i + 4;
-          while(j < str.size() && isspace(str[j])) j++;
-          if(j < str.size() && str[j] == '(') found = 1;
+          while(j < (int)str.size() && isspace(str[j])) j++;
+          if(j < (int)str.size() && str[j] == '(') found = 1;
         }
       }
 
@@ -13646,13 +13673,13 @@ int main(int argc, char **argv){
   
 //  c.debug_writer(); return 0;
   c.output(0);
-  printf("// cLay version 20241019-1\n");
+  printf("// cLay version 20250224-1\n");
 
 
   str = str_store;
   f = 0;
   printf("\n// --- original code ---\n");
-  rep(i,str.size()){
+  rep(i,(int)str.size()){
     if(!f) printf("// "), f = 1;
     if(str[i]=='\r') continue;
     putchar(str[i]);
