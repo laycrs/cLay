@@ -17,7 +17,7 @@ using namespace std;
 
 void reader(int *x){int k,m=0;*x=0;for(;;){mygc(k);if(k=='-'){m=1;break;}if('0'<=k&&k<='9'){*x=k-'0';break;}}for(;;){mygc(k);if(k<'0'||k>'9')break;*x=(*x)*10+k-'0';}if(m)(*x)=-(*x);}
 void reader(ll *x){int k,m=0;*x=0;for(;;){mygc(k);if(k=='-'){m=1;break;}if('0'<=k&&k<='9'){*x=k-'0';break;}}for(;;){mygc(k);if(k<'0'||k>'9')break;*x=(*x)*10+k-'0';}if(m)(*x)=-(*x);}
-void reader(double *x){scanf("%lf",x);}
+void reader(double *x){const int k = scanf("%lf",x);}
 int reader(char c[]){int i,s=0;for(;;){mygc(i);if(i!=' '&&i!='\n'&&i!='\r'&&i!='\t'&&i!=EOF) break;}c[s++]=i;for(;;){mygc(i);if(i==' '||i=='\n'||i=='\r'||i=='\t'||i==EOF) break;c[s++]=i;}c[s]='\0';return s;}
 template <class T, class S> void reader(T *x, S *y){reader(x);reader(y);}
 template <class T, class S, class U> void reader(T *x, S *y, U *z){reader(x);reader(y);reader(z);}
@@ -63,6 +63,8 @@ ll primitiveRoot(ll p){
 
 int user_code = 1;
 set<string> g_flags;
+
+const vector<string> STR_MODIFIER = {"static", "extern", "thread_local", "register", "const", "volatile", "inline", "virtual", "explicit", "constexpr", "consteval", "constinit", "final"};
 
 struct insertfunctions{
   vector<string> name;
@@ -6090,32 +6092,20 @@ struct code{
         ftrim(in);
         continue;
       }
-      
-      if(in.substr(0,6) == "const "){
-        in = in.substr(6);
-        ftrim(in);
-        continue;
+
+      {
+        int chk_fg = 0;
+        for(const auto& mod_str : STR_MODIFIER){
+          const int len = mod_str.size();
+          if(in.substr(0,len+1) == mod_str + " "){
+            chk_fg = 1;
+            in = in.substr(len+1);
+            break;
+          }
+          if(chk_fg) continue;
+        }
       }
-      if(in.substr(0,7) == "static "){
-        in = in.substr(7);
-        ftrim(in);
-        continue;
-      }
-      if(in.substr(0,9) == "register "){
-        in = in.substr(9);
-        ftrim(in);
-        continue;
-      }
-      if(in.substr(0,9) == "register "){
-        in = in.substr(9);
-        ftrim(in);
-        continue;
-      }
-      if(in.substr(0,7) == "extern "){
-        in = in.substr(7);
-        ftrim(in);
-        continue;
-      }
+
       if(in.substr(0,9) == "typename "){
         in = in.substr(9);
         ftrim(in);
@@ -6197,31 +6187,19 @@ struct code{
         continue;
       }
       
-      if(in.substr(0,6) == "const "){
-        in = in.substr(6);
-        ftrim(in);
-        continue;
+      {
+        int chk_fg = 0;
+        for(const auto& mod_str : STR_MODIFIER){
+          const int len = mod_str.size();
+          if(in.substr(0,len+1) == mod_str + " "){
+            chk_fg = 1;
+            in = in.substr(len+1);
+            break;
+          }
+          if(chk_fg) continue;
+        }
       }
-      if(in.substr(0,7) == "static "){
-        in = in.substr(7);
-        ftrim(in);
-        continue;
-      }
-      if(in.substr(0,9) == "register "){
-        in = in.substr(9);
-        ftrim(in);
-        continue;
-      }
-      if(in.substr(0,9) == "register "){
-        in = in.substr(9);
-        ftrim(in);
-        continue;
-      }
-      if(in.substr(0,7) == "extern "){
-        in = in.substr(7);
-        ftrim(in);
-        continue;
-      }
+
       if(in.substr(0,9) == "typename "){
         in = in.substr(9);
         ftrim(in);
@@ -6353,15 +6331,17 @@ struct code{
     in = vs[0];
 
     for(;;){
-      if(in.substr(0,6) == "const "){
-        in = in.substr(6);
-        ftrim(in);
-        continue;
-      }
-      if(in.substr(0,7) == "static "){
-        in = in.substr(7);
-        ftrim(in);
-        continue;
+      {
+        int chk_fg = 0;
+        for(const auto& mod_str : STR_MODIFIER){
+          const int len = mod_str.size();
+          if(in.substr(0,len+1) == mod_str + " "){
+            chk_fg = 1;
+            in = in.substr(len+1);
+            break;
+          }
+          if(chk_fg) continue;
+        }
       }
       if(in.substr(0,8) == "typename "){
         in = in.substr(8);
@@ -6480,15 +6460,17 @@ struct code{
     in = vs[0];
 
     for(;;){
-      if(in.substr(0,6) == "const "){
-        in = in.substr(6);
-        ftrim(in);
-        continue;
-      }
-      if(in.substr(0,7) == "static "){
-        in = in.substr(7);
-        ftrim(in);
-        continue;
+      {
+        int chk_fg = 0;
+        for(const auto& mod_str : STR_MODIFIER){
+          const int len = mod_str.size();
+          if(in.substr(0,len+1) == mod_str + " "){
+            chk_fg = 1;
+            in = in.substr(len+1);
+            break;
+          }
+          if(chk_fg) continue;
+        }
       }
       if(in.substr(0,8) == "typename "){
         in = in.substr(8);
@@ -13154,9 +13136,18 @@ struct code{
             //fprintf(stderr,"for-3 [%s]\n",a.c_str());
             for(;;){
               trim(a);
-              if(a.substr(0,7)=="static "){a = a.substr(7); continue;}
-              if(a.substr(0,6)=="const "){a = a.substr(6); continue;}
-              if(a.substr(0,6)=="final "){a = a.substr(6); continue;}
+              {
+                int chk_fg = 0;
+                for(const auto& mod_str : STR_MODIFIER){
+                  const int len = mod_str.size();
+                  if(a.substr(0,len+1) == mod_str + " "){
+                    chk_fg = 1;
+                    a = a.substr(len+1);
+                    break;
+                  }
+                  if(chk_fg) continue;
+                }
+              }
               break;
             }
             sy = -1;
@@ -13673,7 +13664,7 @@ int main(int argc, char **argv){
   
 //  c.debug_writer(); return 0;
   c.output(0);
-  printf("// cLay version 20250224-1\n");
+  printf("// cLay version 20250308-1\n");
 
 
   str = str_store;
